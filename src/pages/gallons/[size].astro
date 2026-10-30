@@ -1,0 +1,33 @@
+---
+import Base from '../../layouts/Base.astro';
+import { SIZE_PAGES } from '../../data/pages.mjs';
+import { volume, num, saltGrams, saltBags, chlorineDose, GAL_L } from '../../lib/pool.mjs';
+export function getStaticPaths() { return SIZE_PAGES.map((s) => ({ params: { size: s.slug }, props: { s } })); }
+const { s } = Astro.props as { s: any };
+const rows = s.depths
+  ? s.depths.map((d: number) => ({ label: `${Math.round(d * 12)} in of water`, g: volume({ shape: s.shape, length: s.length, shallow: d, deep: d }) }))
+  : s.slopes.map(([a, b]: number[]) => ({ label: a === b ? `${a} ft all over` : `${a} to ${b} ft floor`, g: volume({ shape: s.shape, length: s.length, width: s.width, shallow: a, deep: b }) }));
+const mid = rows[1].g, area = s.shape === 'round' ? Math.PI / 4 * s.length * s.length : s.length * s.width;
+const salt = saltGrams(mid, 3200), gpm = mid / 8 / 60;
+const others = SIZE_PAGES.filter((o) => o.slug !== s.slug);
+---
+<Base title={`How Many Gallons in a ${s.name}? ${num(Math.round(mid / 100) * 100)} Gallons`} description={`A ${s.name} holds about ${num(Math.round(mid / 100) * 100)} gallons at ${rows[1].label.replace(' of water', '').replace(' floor', '')}. Depth chart, salt, shock, fill time and pump flow for this size.`} crumbs={[['Gallons chart', '/how-many-gallons-in-a-pool/'], [s.name]]}>
+  <h1>How many gallons in a {s.name}?</h1>
+  <p class="hl">About <strong>{num(Math.round(mid / 100) * 100)} gallons</strong> ({num(Math.round(mid * GAL_L / 100) * 100)} liters), with {rows[1].label}. {s.note}</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Water depth</th><th class="n">Gallons</th><th class="n">Liters</th></tr></thead>
+    <tbody>{rows.map((r: any) => <tr><td>{r.label}</td><td class="n">{num(r.g)}</td><td class="n">{num(r.g * GAL_L)}</td></tr>)}</tbody>
+  </table></div>
+  <p>Surface area is {num(area)} sq ft{s.shape === 'round' ? ' for the circle' : ''}, and each extra inch of water adds about {num(area / 12 * 7.48)} gallons, so a level check is worth doing.</p>
+  <h2>What this size needs</h2>
+  <div class="tbl"><table><tbody>
+    <tr><td>Salt for a new salt system, to 3,200 ppm</td><td class="n">{num(salt / 453.592)} lb ({saltBags(salt)} × 40 lb bags)</td></tr>
+    <tr><td>1 ppm of chlorine, 10% liquid</td><td class="n">{chlorineDose(mid, 1, 'liquid10')}</td></tr>
+    <tr><td>Shock to 10 ppm, 65% cal-hypo</td><td class="n">{chlorineDose(mid, 10, 'calhypo65')}</td></tr>
+    <tr><td>Pump flow for an 8-hour turnover</td><td class="n">{num(gpm)} GPM</td></tr>
+    <tr><td>Fill time at 9 GPM</td><td class="n">{num(mid / 9 / 60, 1)} hours</td></tr>
+  </tbody></table></div>
+  <p class="small">Based on {num(Math.round(mid / 100) * 100)} gallons. For your exact volume, use the <a href="/pool-volume-calculator/">pool volume calculator</a>.</p>
+  <h2>Other sizes</h2>
+  <ul class="near">{others.map((o) => <li><a href={`/gallons/${o.slug}/`}>{o.name}</a></li>)}<li><a href="/how-many-gallons-in-a-pool/">Full chart</a></li></ul>
+</Base>

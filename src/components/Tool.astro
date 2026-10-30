@@ -1,0 +1,29 @@
+---
+// A calculator. The default result is in the HTML; the browser re-runs the same function on each change.
+import { TOOLS } from '../lib/pool.mjs';
+interface Props { kind: string }
+const { kind } = Astro.props;
+const tool = (TOOLS as any)[kind];
+const defaults = Object.fromEntries(tool.inputs.map((i: any) => [i.id, i.value]));
+---
+<form class="tool" data-tool={kind} onsubmit="return false">
+  {tool.inputs.map((i: any) => <label>{i.label}
+    {i.options
+      ? <select name={i.id}>{i.options.map(([v, n]: [string, string]) => <option value={v} selected={v === i.value}>{n}</option>)}</select>
+      : <input type="number" name={i.id} value={i.value} step={i.step ?? 1} min="0" inputmode="decimal" />}
+  </label>)}
+  <div class="out" aria-live="polite" set:html={tool.run(defaults)} />
+</form>
+<script>
+  import { TOOLS } from '../lib/pool.mjs';
+  document.querySelectorAll<HTMLFormElement>('form[data-tool]').forEach((f) => {
+    const tool = (TOOLS as any)[f.dataset.tool!], out = f.querySelector('.out')!;
+    const draw = () => {
+      const v: Record<string, any> = {};
+      tool.inputs.forEach((i: any) => { const el = f.elements.namedItem(i.id) as HTMLInputElement; v[i.id] = i.options ? el.value : Math.max(0, parseFloat(el.value) || 0); });
+      if ('gal' in v && !v.gal) { out.innerHTML = '<p>Enter your pool gallons.</p>'; return; }
+      out.innerHTML = tool.run(v);
+    };
+    f.addEventListener('input', draw);
+  });
+</script>

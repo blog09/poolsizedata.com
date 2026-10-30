@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import Tool from '../components/Tool.astro';
+import { PAGES } from '../data/pages.mjs';
+export function getStaticPaths() { return PAGES.map((p) => ({ params: { slug: p.slug }, props: { p } })); }
+const { p } = Astro.props as { p: (typeof PAGES)[number] };
+const related = (p as any).tool
+  ? PAGES.filter((o) => (o as any).tool && o.slug !== p.slug).slice(0, 8)
+  : PAGES.filter((o) => o.slug !== p.slug && !(o as any).tool).slice(0, 8);
+const app = (p as any).tool ? [{ '@context': 'https://schema.org', '@type': 'WebApplication', name: p.h1, applicationCategory: 'UtilitiesApplication', operatingSystem: 'Any', offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' } }] : [];
+---
+<Base title={p.title} description={p.desc} crumbs={[[p.short]]} schema={app}>
+  <h1>{p.h1}</h1>
+  <p class="hl" set:html={p.lead} />
+  {(p as any).tool && <Tool kind={(p as any).tool} />}
+  <Fragment set:html={p.body} />
+  <h2>Related</h2>
+  <ul class="near">{related.map((o) => <li><a href={`/${o.slug}/`}>{o.short}</a></li>)}</ul>
+</Base>

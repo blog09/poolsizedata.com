@@ -1,0 +1,32 @@
+---
+import Base from '../layouts/Base.astro';
+import Tool from '../components/Tool.astro';
+import { hero } from '../brand.mjs';
+import { PAGES, SIZE_PAGES } from '../data/pages.mjs';
+const blurb: Record<string, string> = {
+  'pool-salt-calculator': 'Pounds and bags to reach 3,200 ppm', 'pool-chemical-calculator': 'Enter test results, get every dose in order', 'pool-shock-calculator': 'Matched to your stabilizer level', 'pool-chlorine-calculator': 'Liquid, bleach, cal-hypo, dichlor, trichlor',
+  'pool-alkalinity-calculator': 'Baking soda up, acid down', 'pool-ph-calculator': 'Muriatic acid or soda ash', 'pool-stabilizer-calculator': 'Cyanuric acid dose or water to replace', 'pool-calcium-hardness-calculator': 'Calcium chloride dose',
+  'pool-fill-time-calculator': 'Hours on your hose and the water bill', 'pool-heater-calculator': 'BTU per hour for your pool', 'pool-pump-size-calculator': 'GPM for your turnover time', 'pool-filter-size-calculator': 'Sand filter tank size', 'pool-sand-calculator': 'Pounds of #20 silica sand',
+};
+const tools = PAGES.filter((p) => blurb[p.slug]);
+const guides = PAGES.filter((p) => p.slug.startsWith('how-to-'));
+const sizes = PAGES.filter((p) => !blurb[p.slug] && !p.slug.startsWith('how-to-') && p.slug !== 'pool-volume-calculator');
+---
+<Base title="Pool Calculators: Volume, Salt, Chlorine and pH | PoolSizeData" description="Free pool calculators with the maths shown: gallons, salt, chlorine, shock, pH, alkalinity and stabilizer, plus charts of pool and hot tub sizes.">
+  <div class="pair">
+    <div>
+      <h1>How many gallons is your pool?</h1>
+      <p>Start here. Every chemical dose depends on your gallons, and most pool owners only have a rough idea. Enter your measurements, then use the number in any calculator below.</p>
+    </div>
+    <Fragment set:html={hero()} />
+  </div>
+  <Tool kind="volume" />
+  <h2>Pool chemical calculators</h2>
+  <ul class="cards">{tools.map((p) => <li><a href={`/${p.slug}/`}><b>{p.short}</b><span>{blurb[p.slug]}</span></a></li>)}</ul>
+  <h2>Fix a problem</h2>
+  <ul class="near">{guides.map((p) => <li><a href={`/${p.slug}/`}>{p.short}</a></li>)}</ul>
+  <h2>Size charts</h2>
+  <ul class="near">{sizes.map((p) => <li><a href={`/${p.slug}/`}>{p.short}</a></li>)}{SIZE_PAGES.map((s) => <li><a href={`/gallons/${s.slug}/`}>{s.name}</a></li>)}</ul>
+  <h2>Why trust these numbers?</h2>
+  <p>The doses come from basic chemistry, not from a product label written to sell more product. A pound of salt is a pound of salt: 10,000 gallons is 37,854 liters, so 1 ppm is 37.9 grams. Water targets are marked as CDC figures, maker figures or common practice. <a href="/sources/">See the sources and formulas</a>.</p>
+</Base>

@@ -1,0 +1,83 @@
+---
+import { mark } from '../brand.mjs';
+interface Props { title: string; description: string; schema?: object[]; crumbs?: [string, string?][] }
+const { title, description, schema = [], crumbs = [] } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const home = new URL('/', Astro.site).href;
+// Google shows ~155-160 characters: trim long descriptions at a word boundary
+const desc = description.length > 160 ? description.slice(0, 157).replace(/\s+\S*$/, '') + '…' : description;
+const ld = [...schema];
+if (Astro.url.pathname === '/') ld.unshift({ '@context': 'https://schema.org', '@type': 'WebSite', name: 'PoolSizeData', url: home, publisher: { '@type': 'Organization', name: 'PoolSizeData', url: home, logo: new URL('/logo.png', Astro.site).href } });
+if (crumbs.length) ld.push({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [['Home', '/'] as [string, string?], ...crumbs].map(([name, url], i) => ({ '@type': 'ListItem', position: i + 1, name, item: new URL(url ?? Astro.url.pathname, Astro.site).href })) });
+---
+<!doctype html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{title}</title>
+<meta name="description" content={desc} />
+<link rel="canonical" href={canonical} />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="PoolSizeData" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={desc} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={new URL('/og.png', Astro.site).href} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="theme-color" content="#0c4a6e" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+{ld.map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} />)}
+<style is:global>
+  :root { --text:#1b2a33; --soft:#5b6c77; --line:#cfeaf4; --cy:#0e7490; --deep:#0c4a6e; --amb:#d97706; }
+  * { box-sizing:border-box; }
+  body { margin:0; color:var(--text); background:#fafdfe; font:17px/1.62 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif; }
+  a { color:var(--cy); }
+  .col { max-width:880px; margin:0 auto; padding:0 16px; }
+  .top { background:var(--deep); }
+  .top .col { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:6px 16px; padding-top:9px; padding-bottom:9px; }
+  .brand { display:flex; align-items:center; gap:9px; font-weight:800; font-size:20px; color:#fff; text-decoration:none; }
+  .brand b { color:#67e8f9; }
+  .top nav { display:flex; flex-wrap:wrap; gap:4px 12px; font-size:15px; }
+  .top nav a { color:#e0f2fe; text-decoration:none; padding:2px 8px; border-radius:6px; } .top nav a:hover { background:#0e7490; }
+  h1 { font-size:clamp(28px,4.8vw,40px); line-height:1.15; margin:24px 0 10px; color:var(--deep); }
+  h2 { font-size:22px; margin:34px 0 10px; color:var(--deep); }
+  .crumb { font-size:14px; color:var(--soft); margin-top:14px; } .crumb a { color:var(--soft); }
+  .hl { font-size:18.5px; background:#fff; border:1px solid var(--line); border-left:5px solid var(--cy); padding:14px 18px; border-radius:8px; }
+  .tbl { overflow-x:auto; } table { width:100%; border-collapse:collapse; font-size:15.5px; background:#fff; }
+  th, td { padding:7px 10px; border-bottom:1px solid var(--line); text-align:left; } th { color:var(--soft); font-size:13.5px; font-weight:600; }
+  td.n, th.n { text-align:right; font-variant-numeric:tabular-nums; }
+  .near { display:flex; flex-wrap:wrap; gap:6px; padding:0; list-style:none; }
+  .near a { display:block; padding:5px 10px; border:1px solid var(--line); border-radius:8px; background:#fff; text-decoration:none; font-size:15px; }
+  .near a:hover { border-color:var(--cy); }
+  .tool { background:#fff; border:2px solid var(--cy); border-radius:12px; padding:14px 16px; margin:16px 0; }
+  .tool label { display:inline-flex; flex-direction:column; font-size:13.5px; color:var(--soft); margin:0 10px 8px 0; }
+  .tool input, .tool select { font:inherit; width:150px; max-width:100%; padding:6px 8px; border:1px solid #7dd3fc; border-radius:8px; background:#fff; }
+  .out { margin-top:6px; font-size:17px; } .out table { font-size:16.5px; }
+  .small { font-size:14px; color:var(--soft); }
+  .pair { display:grid; grid-template-columns:1.1fr 1fr; gap:22px; align-items:center; } .pair svg { width:100%; height:auto; }
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:10px; padding:0; list-style:none; }
+  .cards a { display:block; height:100%; background:#fff; border:1px solid var(--line); border-radius:10px; padding:11px 13px; text-decoration:none; color:var(--text); }
+  .cards a:hover { border-color:var(--cy); } .cards b { display:block; color:var(--deep); }
+  .cards span { font-size:14px; color:var(--soft); }
+  @media (max-width:700px) { .pair { grid-template-columns:1fr; } }
+  footer { margin-top:44px; border-top:1px solid var(--line); background:#fff; font-size:14.5px; color:var(--soft); }
+  footer .col { padding-top:18px; padding-bottom:24px; }
+</style>
+</head>
+<body>
+<header class="top"><div class="col">
+  <a class="brand" href="/" aria-label="PoolSizeData home"><Fragment set:html={mark(30)} /><span>Pool<b>SizeData</b></span></a>
+  <nav><a href="/pool-volume-calculator/">Volume</a><a href="/pool-chemical-calculator/">Chemicals</a><a href="/pool-salt-calculator/">Salt</a><a href="/pool-chemical-levels/">Levels chart</a><a href="/pool-sizes/">Sizes</a></nav>
+</div></header>
+<main class="col">
+  {crumbs.length > 0 && <p class="crumb"><a href="/">Home</a>{crumbs.map(([n, u]) => <> › {u ? <a href={u}>{n}</a> : n}</>)}</p>}
+  <slot />
+</main>
+<footer><div class="col">
+  <p><strong>PoolSizeData</strong> shows the maths behind pool sizes and chemical doses. Doses are calculated estimates: read each product's label, and add less than you think you need, then retest.</p>
+  <p><a href="/about/">About</a> · <a href="/sources/">Sources and formulas</a> · <a href="/privacy/">Privacy</a> · <a href="/contact/">Contact</a></p>
+</div></footer>
+</body>
+</html>

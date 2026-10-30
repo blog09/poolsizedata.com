@@ -1,0 +1,19 @@
+{
+  "name": "poolsizedata",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "preview": "astro preview",
+    "build": "astro build",
+    "build:gated": "astro build && python scripts/quality_check.py gallons",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "astro": "^5.7.0",
+    "@astrojs/sitemap": "^3.3.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.151.0"
+  }
+}

@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Sources and Formulas | PoolSizeData" description="Where PoolSizeData's pool chemistry targets come from, and the formulas behind each dose: CDC guidance, the CDC model code, maker figures and stoichiometry." crumbs={[['Sources and formulas']]}>
+  <h1>Sources and formulas</h1>
+  <h2>Water targets</h2>
+  <ul>
+    <li><a href="https://www.cdc.gov/healthy-swimming/about/home-pool-and-hot-tub-water-treatment-and-testing.html" rel="noopener">CDC: home pool and hot tub water treatment and testing</a>. Chlorine, pH, testing frequency, and hot tub advice.</li>
+    <li><a href="https://www.cdc.gov/model-aquatic-health-code/media/pdfs/2023-MAHC-508.pdf" rel="noopener">CDC Model Aquatic Health Code, 2023</a>. Total alkalinity and calcium hardness limits. It is written for public pools, so treat it as outer limits.</li>
+    <li><a href="https://www.hayward.com/knowledge-base/how-much-salt-does-the-system-require/" rel="noopener">Hayward: how much salt does the system require?</a> AquaRite salt range.</li>
+  </ul>
+  <p>Ranges described as "common targets" are everyday pool-care practice and do not come from a health authority. The chlorine-to-stabilizer ratios (7.5% and 40% of CYA) are rules of thumb from the Trouble Free Pool community. Our sand, hot tub and Olympic depth figures come from maker and dealer listings, and those sometimes disagree: the pages say so where it matters.</p>
+  <h2>Formulas</h2>
+  <p>10,000 US gallons = 37,854 liters, and 1 ppm = 1 mg per liter.</p>
+  <ul>
+    <li><strong>Salt, CYA:</strong> ppm × liters ÷ 1,000 = grams of the pure substance.</li>
+    <li><strong>Chlorine:</strong> the same, divided by the product's available chlorine. Liquid strength is treated as grams per 100 mL.</li>
+    <li><strong>Baking soda:</strong> 10 ppm alkalinity (as CaCO3) is 0.2 meq/L, at 84 mg per meq: 1.40 lb per 10,000 gallons.</li>
+    <li><strong>Muriatic acid:</strong> 31.45% is about 10 mol/L, so 10 ppm in 10,000 gallons takes about 26 fl oz.</li>
+    <li><strong>Calcium chloride:</strong> 77% flake, taken as the dihydrate: 10 ppm in 10,000 gallons takes about 1.2 lb.</li>
+    <li><strong>pH doses:</strong> the carbonate system at constant dissolved carbonate (pK1 6.2, pK2 10.1). These ignore stabilizer and borates, so they are estimates.</li>
+    <li><strong>Volume:</strong> 7.48 gallons per cubic foot.</li>
+  </ul>
+  <p>Spot an error? Please <a href="/contact/">tell us</a>.</p>
+</Base>
